@@ -1,3 +1,5 @@
+//
+
 int main() {
 	
 	//create my msgQ with key value from ftok()
