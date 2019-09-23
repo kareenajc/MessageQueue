@@ -1,5 +1,3 @@
-// this is another test
-
 int main() {
 	
 	//create my msgQ with key value from ftok()
@@ -18,8 +16,8 @@ int main() {
 				
 				//type cast to msgbuf pointer from buf
 	msgrcv(qid, (struct msgbuf *)&msg, size, 117, 0);	//read mesg. mtype = 117
-														//don't read "fake mesg
-														//header msgrcv(int, struct msgbug *, int, int, int)
+								//don't read "fake mesg
+								//header msgrcv(int, struct msgbug *, int, int, int)
 	cout << getid() << ": gets message" << endl;
 	cout <<"message: " << msg.greeting <<endl;
 	
