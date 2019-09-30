@@ -3,6 +3,7 @@
 #include <sys/msg.h>	//for msgget
 #include <sys/types.h>	//for getpid()
 #include <unistd.h>	//for getpid()
+#include <string.h>
 #include <iostream>
 
 using namespace std;
@@ -10,13 +11,13 @@ using namespace std;
 int main() {
 	
 	//create my msgQ with key value from ftok()
-	int qid = msgget(ftok(".",'u'), IPC_EXCEL | IPC_CREAT | 0600); //handle to queue
+	int qid = msgget(ftok(".",'u'), IPC_EXCL | IPC_CREAT | 0600); //handle to queue
 																	//ftok = system wide unique key
 	
 	//declare my message buffer
 	struct buf{
 		long mtype; //required
-		char getting[50]; //mesg content
+		char greeting[50]; //mesg content
 		//no strings etc. because it's not fixed size
 	};
 	
@@ -28,10 +29,10 @@ int main() {
 	cout << getpid() << ": gets message" << endl;
 	cout <<"message: " << msg.greeting <<endl;
 	
-	strncat(msg.greeting, " and Adios.");
+	strncat(msg.greeting, " and Adios.", size);
 	cout << getpid() << ": sends reply" <<endl;
 	msg.mtype = 314; //only reading msg with mtype 314
-	msfsnd(qid, (struct msgbuf *)&msg, size, 0);
+	msgsnd(qid, (struct msgbuf *)&msg, size, 0);
 	cout << getpid() << ": now exits" << endl;
 	
 	msgrcv(qid, (struct msgbuf *)&msg, size, -112, 0);	

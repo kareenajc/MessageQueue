@@ -1,6 +1,16 @@
+#include <sys/types.h>	//for msgget
+#include <sys/ipc.h>	//for msgget
+#include <sys/msg.h>	//for msgget
+#include <sys/types.h>	//for getpid()
+#include <unistd.h>	//for getpid()
+#include <string.h>
+#include <iostream>
+
+using namespace std;
+
 int main() {
 	//pause program A
-	sleep(3); 	//BAD programming - unreliable & portential bug
+//	sleep(3); 	//BAD programming - unreliable & portential bug
 	
 	int qid = msgget(ftok(".", 'u'), 0);	//find queue, if doesn't exist, create it
 											// 0 = find
@@ -17,18 +27,18 @@ int main() {
 	
 	//sending
 	msg.mtype = 111;
-	strcpy(msg.greeting, "Fake message");	//use strncpy instead!!!
-	msgsnd(qid, *struct msfbuf *)&msg, size, 0);
+	strncpy(msg.greeting, "Fake message", size);	//use strncpy instead!!!
+	msgsnd(qid, (struct msfbuf *)&msg, size, 0);
 	
 	msg.mtype = 113;
-	strcpy(msg.greeting, "Another Fake");
-	msgsnd(qid, *struct msfbuf *)&msg, size, 0);
+	strncpy(msg.greeting, "Another Fake", size);
+	msgsnd(qid, (struct msfbuf *)&msg, size, 0);
 	
 	//prepare my message to send
 	msg.mtype = 117;
-	strcpy(msg.greeting, "Hello there");
+	strncpy(msg.greeting, "Hello there", size);
 	cout << getpid() <<": sends greeting" <<endl;
-	msgsnd(qid, *struct msfbuf *) &msg, size, 0);	//sending
+	msgsnd(qid, (struct msfbuf *)&msg, size, 0);	//sending
 													//0 = halt here until message is copied into queue successfully
 													//non-zero = causes busy wait (avoid!!!!)
 													
