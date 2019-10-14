@@ -10,6 +10,11 @@
 using namespace std;
 
 int main() {
+	bool activeA = true;
+	bool activeB = true;
+	bool activeC = true;
+
+	int counterB = 0;
 
 	//create my msgQ with key value from ftok()
 	int qid = msgget(ftok(".",'u'), IPC_EXCL | IPC_CREAT | 0600);
@@ -24,8 +29,25 @@ int main() {
 	buf msg;
 	int size = sizeof(msg) - sizeof(long);
 
-	//now safe to delete message queue
-	msgctl(qid, IPC_RMID, NULL);	//remove queue
+	do {
+
+	}while(activeA == true || activeB == true || activeC == true)
+
+	msgrcv(qid, (struct msgbuf *)&msg, size, 314, 0);	//read mesg. mtype = 314
+	cout <<"message from probeA: " << msg.greeting <<endl;
+
+	strncat(msg.greeting, getpid() + " return acknowledgement", size);
+	cout << getpid() << ": DataHub sent a message" << endl;
+	msg.mtype = 117;
+	msgsnd(qid, (struct msgbuf *)&msg, size, 0);
+
+	//check if all Probes have terminated
+	if(activeA == false && activeB && false && activeC == false){
+		cout << "DataHub terminating."<<endl;
+	
+		//now safe to delete message queue
+		msgctl(qid, IPC_RMID, NULL);	//remove queue
+	}
 	
 	exit(0);
 }
