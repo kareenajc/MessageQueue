@@ -10,9 +10,7 @@ using namespace std;
 
 int main() {
 	
-	//create my msgQ with key value from ftok()
-	int qid = msgget(ftok(".",'u'), IPC_EXCL | IPC_CREAT | 0600); //handle to queue
-																	//ftok = system wide unique key
+	int qid = msgget(ftok(".", 'u'), 0);	//find queue, if doesn't exist, create it
 	
 	//declare my message buffer
 	struct buf{
@@ -39,6 +37,5 @@ int main() {
 	msgrcv(qid, (struct msgbuf *)&msg, size, 0, 0);	//0 = take the oldest message
 	msgrcv(qid, (struct msgbuf *)&msg, size, 117, 0);	//tie breaker FIFO
 	
-	//now safe to delete message queue
-	msgctl(qid, IPC_RMID, NULL);	//remove queue
+	
 }
