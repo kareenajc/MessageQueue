@@ -12,48 +12,55 @@
 using namespace std;
 
 int main() {
-
-	int alpha = 997;
-	
-
-	int qid = msgget(ftok(".", 'u'), 0);	//find queue, if doesn't exist, create it
-	
 	//declare my message buffer
 	struct buf{
 		long mtype; //required
 		char greeting[50]; //mesg content
 		//no strings etc. because it's not fixed size
 	};
+
+	//find or create queue
+	int qid = msgget(ftok(".", 'u'), 0);	//find queue, if doesn't exist, create it
 	
+	//declare message
 	buf msg;
 	int size = sizeof(msg)-sizeof(long); //type cast to msgbuf pointer from buf
 
 	//initialize random seed from time
   	srand (time(NULL));
+	int randomNum = 120; //ensures the while loop is entered
+	
+	int alpha = 997;  //magic seed - random number must be divisible by this
 
-	do {
+	while(randomNum >= 100){
 		//generate a random integer
-  		int randomNum = rand();
-		
+  		randomNum = rand();
+		//cout << randomNum <<endl;
+
 		//check if ProbeA should terminate
-		if(ramdomNum < 100){
-			cout << getpid() << " will be terminated." << endl;
+		if(randomNum < 100){
+			cout << getpid() << ": will be terminated." << endl;
+			msg.mtype = 314; //sending msg with mtype 314
+			strncpy(msg.greeting, "terminate", size);
+			msgsnd(qid, (struct msgbuf *)&msg, size, 0);
 		}
 		else {
 			//check for valid reading
 			if(randomNum % alpha == 0){
 				//send message
-				strncat(msg.greeting, getpid() + " sent a message", size); //creating message
 				cout << getpid() << ": ProbeA sends message" << endl;
-				msg.mtype = 314; //only reading msg with mtype 314
-				msgsnd(qid, (struct msgbuf *)&msg, size, 0); //sending message
+				//msg.mtype = 314; //sending msg with mtype 314
+				//strncat(msg.greeting, getpid() + " sent a message", size); //creating message
+				//msgsnd(qid, (struct msgbuf *)&msg, size, 0); //sending message
 
-				msgrcv(qid, (struct msgbuf *)&msg, size, 117, 0);	//read mesg. mtype = 117
-				cout << getpid() << ": gets message from DataHub" << endl;
+				//msgrcv(qid, (struct msgbuf *)&msg, size, 117, 0);	//read mesg. mtype = 117
+				//cout << getpid() << ": gets message from DataHub" << endl;
 			}
 			
 		}
-	} while(randomNum >= 100)
+
+	}
+
 
 	exit(0);	
 }

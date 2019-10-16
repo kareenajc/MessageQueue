@@ -24,10 +24,10 @@ int main() {
 	buf msg;
 	int size = sizeof(msg)-sizeof(long); //type cast to msgbuf pointer from buf
 	msgrcv(qid, (struct msgbuf *)&msg, size, 117, 0);	//read mesg. mtype = 117
-								//don't read "fake mesg
+								//don't read "fake mesg"
 								//header msgrcv(int, struct msgbug *, int, int, int)
 	cout << getpid() << ": gets message" << endl;
-	cout <<"message: " << msg.greeting <<endl;
+	cout << "message: " << msg.greeting <<endl;
 	
 	strncat(msg.greeting, " and Adios.", size);
 	cout << getpid() << ": sends reply" <<endl;
