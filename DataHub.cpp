@@ -13,9 +13,13 @@ using namespace std;
 int main() {		
 	//declare my message buffer
 	//needs to be identical to other struct so that message sent & received is identical
-	struct buf {
-		long mtype;	//required
-		char greeting[50]; //msg conent
+	struct buf{
+		long mtype; //required
+		pid_t pidA;
+		pid_t pidB;
+		pid_t pidC;
+		char greeting[50]; //mesg content
+				//no strings etc. because it's not fixed size
 	};
 
 	//create my msgQ with key value from ftok()
@@ -39,9 +43,9 @@ int main() {
 			activeA = false;
 			cout << "Probe A will terminate" <<endl;
 		}
-		else if(counter >= 10000){
+//		else if(counter >= 10000){
 			
-		}		
+//		}		
 		else {
 			strncpy(msg.greeting, "return acknowledgement", size);
 			cout << getpid() << ": DataHub sent a message" << endl;

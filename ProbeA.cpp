@@ -15,16 +15,22 @@ int main() {
 	//declare my message buffer
 	struct buf{
 		long mtype; //required
+		pid_t pidA;
+		pid_t pidB;
+		pid_t pidC;
 		char greeting[50]; //mesg content
-		//no strings etc. because it's not fixed size
+				//no strings etc. because it's not fixed size
 	};
 
 	//find or create queue
 	int qid = msgget(ftok(".", 'u'), 0);	//find queue, if doesn't exist, create it
-	
+
 	//declare message
 	buf msg;
 	int size = sizeof(msg)-sizeof(long); //type cast to msgbuf pointer from buf
+
+	//find pid for probe A
+	msg.pidA = getpid();
 
 	//initialize random seed from time
   	srand (time(NULL));
@@ -39,7 +45,7 @@ int main() {
 
 		//check if ProbeA should terminate
 		if(randomNum < 100){
-			cout << getpid() << ": will be terminated." << endl;
+			cout << msg.pidA << ": will be terminated." << endl;
 			msg.mtype = 314; //sending msg with mtype 314
 			strncpy(msg.greeting, "terminate", size);
 			msgsnd(qid, (struct msgbuf *)&msg, size, 0);
@@ -48,13 +54,13 @@ int main() {
 			//check for valid reading
 			if(randomNum % alpha == 0){
 				//send message
-				cout << getpid() << ": ProbeA sends message" << endl;
+				cout << msg.pidA << ": ProbeA sends message" << endl;
 				msg.mtype = 314; //sending msg with mtype 314
 				strncpy(msg.greeting, "Probe A sent a message", size); //creating message
 				msgsnd(qid, (struct msgbuf *)&msg, size, 0); //sending message
 
 				msgrcv(qid, (struct msgbuf *)&msg, size, 117, 0);	//read mesg. mtype = 117
-				cout << getpid() << ": gets message from DataHub" << endl;
+				cout << "ProbeA gets message from DataHub" << endl;
 			}
 			
 		}
