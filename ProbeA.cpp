@@ -49,12 +49,12 @@ int main() {
 			if(randomNum % alpha == 0){
 				//send message
 				cout << getpid() << ": ProbeA sends message" << endl;
-				//msg.mtype = 314; //sending msg with mtype 314
-				//strncat(msg.greeting, getpid() + " sent a message", size); //creating message
-				//msgsnd(qid, (struct msgbuf *)&msg, size, 0); //sending message
+				msg.mtype = 314; //sending msg with mtype 314
+				strncpy(msg.greeting, "Probe A sent a message", size); //creating message
+				msgsnd(qid, (struct msgbuf *)&msg, size, 0); //sending message
 
-				//msgrcv(qid, (struct msgbuf *)&msg, size, 117, 0);	//read mesg. mtype = 117
-				//cout << getpid() << ": gets message from DataHub" << endl;
+				msgrcv(qid, (struct msgbuf *)&msg, size, 117, 0);	//read mesg. mtype = 117
+				cout << getpid() << ": gets message from DataHub" << endl;
 			}
 			
 		}

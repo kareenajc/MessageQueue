@@ -28,23 +28,29 @@ int main() {
 	bool activeB = true;
 	bool activeC = true;
 
-	int counterB = 0; //counts number of messages ProbeB has sent, so we can terminate when it hits 10,000
+	int counter = 0; //counts number of messages ProbeB has sent, so we can terminate when it hits 10,000
 
 	do {
 		msgrcv(qid, (struct msgbuf *)&msg, size, 314, 0);	//read mesg. mtype = 314
-		cout <<"message from probeA: " << msg.greeting <<endl;
-		
-		if(msg.greeting == "terminate"){
+		cout <<"message from probeA:" << msg.greeting << endl;
+
+		//Check if ProbeA should terminate
+		if(strcmp(msg.greeting, "terminate") == 0){
 			activeA = false;
-			break;
-			cout << "will terminate" <<endl;
+			cout << "Probe A will terminate" <<endl;
+		}
+		else if(counter >= 10000){
+			
+		}		
+		else {
+			strncpy(msg.greeting, "return acknowledgement", size);
+			cout << getpid() << ": DataHub sent a message" << endl;
+			msg.mtype = 117;
+			msgsnd(qid, (struct msgbuf *)&msg, size, 0);
+			counter++;
 		}
 
-		strncat(msg.greeting, getpid() + " return acknowledgement", size);
-		cout << getpid() << ": DataHub sent a message" << endl;
-		msg.mtype = 117;
-		msgsnd(qid, (struct msgbuf *)&msg, size, 0);
-	}while(activeA = true);
+	}while(activeA == true);
 	//while(activeA == true || activeB == true || activeC == true);
 
 	cout << "DataHub terminating."<<endl;
