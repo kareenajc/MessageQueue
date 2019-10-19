@@ -15,9 +15,9 @@ int main() {
 	//needs to be identical to other struct so that message sent & received is identical
 	struct buf{
 		long mtype; //required
-		pid_t pidA;
-		pid_t pidB;
-		pid_t pidC;
+		pid_t pidA;	//pid for ProbeA
+		pid_t pidB;	//pid for ProbeB
+		pid_t pidC;	//pid for ProbeC
 		char greeting[50]; //mesg content
 				//no strings etc. because it's not fixed size
 	};
@@ -35,26 +35,34 @@ int main() {
 	int counter = 0; //counts number of messages ProbeB has sent, so we can terminate when it hits 10,000
 
 	do {
-		msgrcv(qid, (struct msgbuf *)&msg, size, 314, 0);	//read mesg. mtype = 314
-		cout <<"message from probeA:" << msg.greeting << endl;
-
-		//Check if ProbeA should terminate
-		if(strcmp(msg.greeting, "terminate") == 0){
-			activeA = false;
-			cout << "Probe A will terminate" <<endl;
+		// check if Probe A is active
+		if(activeA == true){
+			msgrcv(qid, (struct msgbuf *)&msg, size, 314, 0);	//read mesg. mtype = 314
+			cout <<"message from probeA (" << msg.pidA << "):" << msg.greeting << endl;
+			//Check if ProbeA should terminate
+			if(strcmp(msg.greeting, "terminate") == 0){
+				activeA = false;
+				cout << "Probe A will terminate" <<endl;
+			}		
+			else {
+				strncpy(msg.greeting, "return acknowledgement", size);
+				cout << getpid() << ": DataHub sent a message" << endl;
+				msg.mtype = 117;
+				msgsnd(qid, (struct msgbuf *)&msg, size, 0);
+				counter++;
+			}
 		}
-//		else if(counter >= 10000){
-			
-//		}		
-		else {
-			strncpy(msg.greeting, "return acknowledgement", size);
-			cout << getpid() << ": DataHub sent a message" << endl;
-			msg.mtype = 117;
-			msgsnd(qid, (struct msgbuf *)&msg, size, 0);
+		if(activeB == true){
+			msgrcv(qid, (struct msgbuf *)&msg, size, 318, 0);	//read mesg. mtype = 318
+			cout <<"message from probeB (" << msg.pidB << "):" << msg.greeting << endl;
 			counter++;
+			if(counter >= 10000){
+				cout << "Probe B will terminate" << endl;
+				activeB = false;
+				force_patch(msg.pidB);
+			}
 		}
-
-	}while(activeA == true);
+	}while(activeA == true || activeB == true);
 	//while(activeA == true || activeB == true || activeC == true);
 
 	cout << "DataHub terminating."<<endl;

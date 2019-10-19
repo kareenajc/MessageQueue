@@ -15,9 +15,9 @@ int main() {
 	//declare my message buffer
 	struct buf{
 		long mtype; //required
-		pid_t pidA;
-		pid_t pidB;
-		pid_t pidC;
+		pid_t pidA;	//pid for ProbeA
+		pid_t pidB;	//pid for ProbeB
+		pid_t pidC;	//pid for ProbeC
 		char greeting[50]; //mesg content
 				//no strings etc. because it's not fixed size
 	};

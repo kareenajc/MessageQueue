@@ -10,6 +10,8 @@
 #include <time.h>       /* time */
 #include "kill_patch.h" //the header file that allows ProbeC to terminate when the User enters a kill command
 
+using namespace std;
+
 int main ()
 {
 	int rho = 251;
@@ -19,11 +21,19 @@ int main ()
 	//needs to be identical to other struct so that message sent & received is identical
 	struct buf {
 		long mtype;	//required
-		char greeting[50]; //msg conent
+		pid_t pidA;	//pid for ProbeA
+		pid_t pidB;	//pid for ProbeB
+		pid_t pidC;	//pid for ProbeC
+		char greeting[50]; //mesg content
 	};
 
 	buf msg;
 	int size = sizeof(msg)-sizeof(long); //type cast to msgbuf pointer from buf
+
+	//find pid for probe C
+	msg.pidC = getpid();
+
+	int randomNum = 0;
 
 	exit(0);
 }
