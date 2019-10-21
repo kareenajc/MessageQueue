@@ -20,15 +20,14 @@ int main ()
 	//needs to be identical to other struct so that message sent & received is identical
 	struct buf {
 		long mtype;	//required
-		pid_t pidA;	//pid for ProbeA
-		pid_t pidB;	//pid for ProbeB
-		pid_t pidC;	//pid for ProbeC
 		char greeting[50]; //mesg content
 	};
 
 	/* initialize random seed: */
   	srand (time(NULL));
 
+	/* allows an infinite loop */
+	bool infin = true;
 
   	/* initialize the random integer */
   	int randomNum = 0;
@@ -37,16 +36,23 @@ int main ()
 	int size = sizeof(msg)-sizeof(long); //type cast to msgbuf pointer from buf
 
 	//find pid for probe B
-	msg.pidB = getpid();
+	pid_t pidB = getpid();
 
-	while(randomNum >= 0){
+	//convert pid to string
+	char mypid[50];
+
+	sprintf(mypid,"%d",pidB);
+
+	string pid = mypid;
+
+	while(infin){
 		/* generate a random integer */
   		randomNum = rand();
 		//check for valid reading
 		if(randomNum % beta == 0){
 			//send message
 			cout << msg.pidB << ": ProbeB sends message" << endl;
-			msg.mtype = 318; //sending msg with mtype 318
+			msg.mtype = 314; //sending msg with mtype 314
 			strncpy(msg.greeting, "Probe B sent a message", size); //creating message
 			msgsnd(qid, (struct msgbuf *)&msg, size, 0); //sending message
 		}

@@ -15,9 +15,6 @@ int main() {
 	//declare my message buffer
 	struct buf{
 		long mtype; //required
-		pid_t pidA;	//pid for ProbeA
-		pid_t pidB;	//pid for ProbeB
-		pid_t pidC;	//pid for ProbeC
 		char greeting[50]; //mesg content
 				//no strings etc. because it's not fixed size
 	};
@@ -30,7 +27,14 @@ int main() {
 	int size = sizeof(msg)-sizeof(long); //type cast to msgbuf pointer from buf
 
 	//find pid for probe A
-	msg.pidA = getpid();
+	pid_t pidA = getpid();
+
+	//convert pid to string
+	char mypid[50];
+
+	sprintf(mypid,"%d",pidA);
+
+	string pid = mypid;
 
 	//initialize random seed from time
   	srand (time(NULL));
@@ -58,7 +62,7 @@ int main() {
 				msg.mtype = 314; //sending msg with mtype 314
 				strncpy(msg.greeting, "Probe A sent a message", size); //creating message
 				msgsnd(qid, (struct msgbuf *)&msg, size, 0); //sending message
-
+				//wait for acknowledgement
 				msgrcv(qid, (struct msgbuf *)&msg, size, 117, 0);	//read mesg. mtype = 117
 				cout << "ProbeA gets message from DataHub" << endl;
 			}
