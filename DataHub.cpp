@@ -29,30 +29,47 @@ int main() {
 	bool activeB = true;
 	bool activeC = true;
 
+	// string for comparison
+	string cmpr;
+	
+
 	int counter = 0; //counts number of messages ProbeB has sent, so we can terminate when it hits 10,000
 
 	do {
 		msgrcv(qid, (struct msgbuf *)&msg, size, 314, 0);	//read mesg. mtype = 314
-		cout <<"message from probeA (" << msg.pidA << "):" << msg.greeting << endl;
+		cout <<"Message Incoming From: "<< msg.greeting << endl;
 		//Check if ProbeA should terminate
 		if(strcmp(msg.greeting, "terminate") == 0){
 			activeA = false;
 			cout << "Probe A will terminate" <<endl;
 		}		
 		else {
-			strncpy(msg.greeting, "return acknowledgement", size);
-			cout << getpid() << ": DataHub sent a message" << endl;
-			msg.mtype = 117;
-			msgsnd(qid, (struct msgbuf *)&msg, size, 0);
+			// reinitialize comparison string
+			cmpr = "";
+			for(int i = 0; i < size; i++){
+				cmpr = cmpr + msg.greeting[i];
+			}
+			if(cmpr.compare(0,7,"Probe A") == 0) {
+				strncpy(msg.greeting, "return acknowledgement", size);
+				cout << getpid() << ": DataHub sent a message" << endl;
+				msg.mtype = 117;
+				msgsnd(qid, (struct msgbuf *)&msg, size, 0);
+			}
 		}
 		counter++;
 		//Check if ProbeB should terminate
-		if(counter >= 10000){
+		if(counter >= 10000 && activeB == true){
 			cout << "Probe B will terminate" << endl;
 			activeB = false;
-			force_patch(msg.pidB);
+//			force_patch(msg.pidB);
 		}
-	}while(activeA == true || activeB == true);
+		//Check if ProbeC has terminated
+		if(strcmp(msg.greeting, "exit") == 0){
+			activeC = false;
+			cout << "Probe C was terminated" << endl;
+		}
+		cout << counter << endl;
+	}while(activeA == true);
 	//while(activeA == true || activeB == true || activeC == true);
 
 	cout << "DataHub terminating."<<endl;

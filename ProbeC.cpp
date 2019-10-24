@@ -15,9 +15,6 @@ using namespace std;
 int main ()
 {
 	int rho = 251;
-	int qid = msgget(ftok(".", 'u'), 0);	//find queue, if doesn't exist, create it
-	/* apply the kill command */
-	
 
 	//declare my message buffer
 	//needs to be identical to other struct so that message sent & received is identical
@@ -45,6 +42,15 @@ int main ()
 
 	string pid = mypid;
 
+	//creating message
+	string message = "Probe C: " + pid;
+	char * convert = new char [message.length() + 1];
+	strcpy(convert, message.c_str());
+
+	int qid = msgget(ftok(".", 'u'), 0);	//find queue, if doesn't exist, create it
+	/* apply the kill command */
+	kill_patch(qid, (struct msgbuf *)&msg, size, 314);
+
 	/* initialize the random integer */
 	int randomNum = 0;
 
@@ -54,9 +60,9 @@ int main ()
 		//check for valid reading
 		if(randomNum % rho == 0){
 			//send message
-			cout << msg.pidC << ": ProbeC sends message" << endl;
+			cout << "ProbeC sends message" << endl;
 			msg.mtype = 314; //sending msg with mtype 314
-			strncpy(msg.greeting, "Probe C sent a message", size); //creating message
+			strncpy(msg.greeting, convert, size); //creating message
 			msgsnd(qid, (struct msgbuf *)&msg, size, 0); //sending message
 		}
 	}

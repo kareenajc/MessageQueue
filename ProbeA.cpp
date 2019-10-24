@@ -36,6 +36,11 @@ int main() {
 
 	string pid = mypid;
 
+	//creating message
+	string message = "Probe A: " + pid;
+	char * convert = new char [message.length() + 1];
+	strcpy(convert, message.c_str());
+
 	//initialize random seed from time
   	srand (time(NULL));
 	int randomNum = 120; //ensures the while loop is entered
@@ -49,7 +54,7 @@ int main() {
 
 		//check if ProbeA should terminate
 		if(randomNum < 100){
-			cout << msg.pidA << ": will be terminated." << endl;
+			cout << "Probe A will be terminated." << endl;
 			msg.mtype = 314; //sending msg with mtype 314
 			strncpy(msg.greeting, "terminate", size);
 			msgsnd(qid, (struct msgbuf *)&msg, size, 0);
@@ -58,9 +63,9 @@ int main() {
 			//check for valid reading
 			if(randomNum % alpha == 0){
 				//send message
-				cout << msg.pidA << ": ProbeA sends message" << endl;
+				cout << "ProbeA sends message" << endl;
 				msg.mtype = 314; //sending msg with mtype 314
-				strncpy(msg.greeting, "Probe A sent a message", size); //creating message
+				strncpy(msg.greeting, convert, size); //creating message
 				msgsnd(qid, (struct msgbuf *)&msg, size, 0); //sending message
 				//wait for acknowledgement
 				msgrcv(qid, (struct msgbuf *)&msg, size, 117, 0);	//read mesg. mtype = 117

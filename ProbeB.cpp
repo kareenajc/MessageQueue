@@ -45,15 +45,20 @@ int main ()
 
 	string pid = mypid;
 
+	//creating message
+	string message = "Probe B: " + pid;
+	char * convert = new char [message.length() + 1];
+	strcpy(convert, message.c_str());
+
 	while(infin){
 		/* generate a random integer */
   		randomNum = rand();
 		//check for valid reading
 		if(randomNum % beta == 0){
 			//send message
-			cout << msg.pidB << ": ProbeB sends message" << endl;
+			cout << "ProbeB sends message" << endl;
 			msg.mtype = 314; //sending msg with mtype 314
-			strncpy(msg.greeting, "Probe B sent a message", size); //creating message
+			strncpy(msg.greeting, convert, size); //creating message
 			msgsnd(qid, (struct msgbuf *)&msg, size, 0); //sending message
 		}
 	}
