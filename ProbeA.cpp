@@ -37,7 +37,7 @@ int main() {
 	string pid = mypid;
 
 	//creating message
-	string message = "Probe A: " + pid;
+	string message = "Probe A - " + pid;
 	char * convert = new char [message.length() + 1];
 	strcpy(convert, message.c_str());
 
@@ -56,7 +56,7 @@ int main() {
 		if(randomNum < 100){
 			cout << "Probe A will be terminated." << endl;
 			msg.mtype = 314; //sending msg with mtype 314
-			strncpy(msg.greeting, "terminate", size);
+			strncpy(msg.greeting, "Probe A - terminate", size);
 			msgsnd(qid, (struct msgbuf *)&msg, size, 0);
 		}
 		else {

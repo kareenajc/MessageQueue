@@ -46,7 +46,7 @@ int main ()
 	string pid = mypid;
 
 	//creating message
-	string message = "Probe B: " + pid;
+	string message = "Probe B - " + pid;
 	char * convert = new char [message.length() + 1];
 	strcpy(convert, message.c_str());
 
