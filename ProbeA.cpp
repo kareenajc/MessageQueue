@@ -12,6 +12,9 @@
 using namespace std;
 
 int main() {
+
+	int alpha = 23997;  //magic seed - random number must be divisible by this
+
 	//declare my message buffer
 	struct buf{
 		long mtype; //required
@@ -44,8 +47,6 @@ int main() {
 	//initialize random seed from time
   	srand (time(NULL));
 	int randomNum = 120; //ensures the while loop is entered
-	
-	int alpha = 997;  //magic seed - random number must be divisible by this
 
 	while(randomNum >= 100){
 		//generate a random integer
@@ -54,7 +55,7 @@ int main() {
 
 		//check if ProbeA should terminate
 		if(randomNum < 100){
-			cout << "Probe A will be terminated." << endl;
+			cout << "Random number: " << randomNum << "\nProbe A will be terminated." << endl;
 			msg.mtype = 314; //sending msg with mtype 314
 			strncpy(msg.greeting, "Probe A - terminate", size);
 			msgsnd(qid, (struct msgbuf *)&msg, size, 0);
