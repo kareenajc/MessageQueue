@@ -14,7 +14,7 @@ using namespace std;
 
 int main ()
 {
-	int rho = 251;
+	int rho = 7027;
 
 	//declare my message buffer
 	//needs to be identical to other struct so that message sent & received is identical
@@ -43,12 +43,14 @@ int main ()
 	string pid = mypid;
 
 	//creating message
-	string message = "Probe C: " + pid;
+	string message = "Probe C - " + pid;
 	char * convert = new char [message.length() + 1];
 	strcpy(convert, message.c_str());
 
 	int qid = msgget(ftok(".", 'u'), 0);	//find queue, if doesn't exist, create it
 	/* apply the kill command */
+	msg.mtype = 314; //sending msg with mtype 314
+	strncpy(msg.greeting, "exit", size); //creating message
 	kill_patch(qid, (struct msgbuf *)&msg, size, 314);
 
 	/* initialize the random integer */

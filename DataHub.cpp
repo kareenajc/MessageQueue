@@ -37,39 +37,37 @@ int main() {
 
 	pid_t pidB;
 
-	// string for comparison
+	// string for comparison to check which Probe sent the message
 	string cmpr;
-	
 
 	int counter = 0; //counts number of messages ProbeB has sent, so we can terminate when it hits 10,000
 	
 
 	do {
 		msgrcv(qid, (struct msgbuf *)&msg, size, 314, 0);	//read mesg. mtype = 314
-		char probe[7];	//identify which probe sent the message
-		strncpy(probe, msg.greeting, 7);
 		cout <<"Message Incoming From: "<< msg.greeting << endl;
-		
+
+		// reinitialize comparison string
+		cmpr = "";
+		for(int i = 0; i < size; i++){
+			cmpr = cmpr + msg.greeting[i];
+		}
+
 		if(strcmp(msg.greeting, "Probe A - terminate") == 0){ //Check if ProbeA should terminate
 			activeA = false;
 			cout << "Probe A will terminate" <<endl;
 		}		
-		else if(strcmp(probe, "Probe A") == 0){
-			startedA = true;
-			activeA = true;
-			// reinitialize comparison string
-			cmpr = "";
-			for(int i = 0; i < size; i++){
-				cmpr = cmpr + msg.greeting[i];
-			}
+		else{
 			if(cmpr.compare(0,7,"Probe A") == 0) {
+				startedA = true;
+				activeA = true;
 				strncpy(msg.greeting, "return acknowledgement", size);
 				cout << getpid() << ": DataHub sent a message" << endl;
 				msg.mtype = 117;
 				msgsnd(qid, (struct msgbuf *)&msg, size, 0);
 			}
 		}
-		else if(strcmp(probe, "Probe B") == 0){	//Check if ProbeB sent the message
+		if(cmpr.compare(0,7,"Probe B") == 0){	//Check if ProbeB sent the message
 			startedB = true;
 			activeB = true;
 			char pid[50];
@@ -77,7 +75,7 @@ int main() {
 			pid[sizeof(msg.greeting)-7] = '\0';
 			pidB = atoi(pid); //pid char[] converted to int
 		}
-		else if(strcmp(probe, "Probe C") == 0){ //Check if ProbeC sent the message
+		if(cmpr.compare(0,7,"Probe C") == 0){ //Check if ProbeC sent the message
 			startedC = true;			
 			activeC = true;
 		}
@@ -96,12 +94,11 @@ int main() {
 			cout << "Probe C was terminated" << endl;
 		}
 
-		if(startedA == true && activeA == false && startedB == true && activeB == false){
+		if(startedA == true && activeA == false && startedB == true && activeB == false && startedC == true && activeC == false){
 			keepGoing = false;
 		}
-//cout << counter << endl;
+
 	}while(keepGoing == true);
-	//while(activeA == true || activeB == true || activeC == true);
 
 	cout << "DataHub terminating."<<endl;
 	

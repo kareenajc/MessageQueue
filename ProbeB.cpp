@@ -13,7 +13,7 @@ using namespace std;
 
 int main ()
 {
-	int beta = 7361;
+	int beta = 7351;
 	int qid = msgget(ftok(".", 'u'), 0);	//find queue, if doesn't exist, create it
 
 	//declare my message buffer
@@ -49,10 +49,10 @@ int main ()
 	string message = "Probe B - " + pid;
 	char * convert = new char [message.length() + 1];
 	strcpy(convert, message.c_str());
-int counter = 0;
+
 	while(infin){
 		/* generate a random integer */
-  		randomNum = rand();
+ 	 	randomNum = rand();
 		//check for valid reading
 		if(randomNum % beta == 0){
 			//send message
@@ -60,8 +60,6 @@ int counter = 0;
 			msg.mtype = 314; //sending msg with mtype 314
 			strncpy(msg.greeting, convert, size); //creating message
 			msgsnd(qid, (struct msgbuf *)&msg, size, 0); //sending message
-counter++;
-cout<<counter<<endl;
 		}
 	}
 

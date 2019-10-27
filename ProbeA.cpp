@@ -13,7 +13,7 @@ using namespace std;
 
 int main() {
 
-	int alpha = 23997;  //magic seed - random number must be divisible by this
+	int alpha = 24001;  //magic seed - random number must be divisible by this
 
 	//declare my message buffer
 	struct buf{
